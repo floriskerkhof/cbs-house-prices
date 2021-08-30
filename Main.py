@@ -16,9 +16,10 @@ import dash_html_components as html
 import plotly.express as px
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
-# import plotly.io as pio
-# pio.renderers.default='browser'
-
+import plotly.io as pio
+pio.renderers.default='browser'
+from plotly.offline import plot
+import plotly.graph_objects as go
 
 
 import Functions as fl
@@ -26,6 +27,7 @@ api='83625NED'
 df=fl.loadin_cbsdata(api)
 df=fl.cbs_add_date_column(df)
 df.rename(columns={'GemiddeldeVerkoopprijs_1':'Average_Price'}, inplace=True)
+df=df[['RegioS','Perioden','Average_Price']]
 id_filt='RegioS'
 available_indicators = df[id_filt].unique()
 x="Perioden"
@@ -50,7 +52,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server=app.server
 
-PAGE_SIZE=30
+PAGE_SIZE=10
 
 app.layout = html.Div(children=[
     html.H4(children='CBS'),
@@ -108,15 +110,37 @@ app.layout = html.Div(children=[
     Input('example-table', "page_current"),
     Input('example-table', "page_size"),
     Input('xaxis-column', 'value'))
-def update_figure(page_current,page_size,xaxis_column_name):
+# def update_figure(page_current,page_size,xaxis_column_name):
+#     # filtered_df = df[df[y] == selected_year]
+#     filtered_df=df
+#     filtered_df=filtered_df[filtered_df[id_filt]==xaxis_column_name]
+#     df1 = filtered_df.groupby(by=['RegioS', 'Perioden'])['Average_Price'].sum().reset_index()
+    
+#     fig = px.bar(df1, x=x, y=y,barmode='group', hover_name=y)
+
+#     fig.update_layout(transition_duration=500)
+
+#     return fig, filtered_df.iloc[
+#         page_current*page_size:(page_current+ 1)*page_size
+#     ].to_dict('records')
+def update_figure2(page_current,page_size,xaxis_column_name):
     # filtered_df = df[df[y] == selected_year]
     filtered_df=df
     filtered_df=filtered_df[filtered_df[id_filt]==xaxis_column_name]
     df1 = filtered_df.groupby(by=['RegioS', 'Perioden'])['Average_Price'].sum().reset_index()
-    
-    fig = px.bar(df1, x=x, y=y,barmode='group', hover_name=y)
+    average=pd.DataFrame(df[['Perioden','Average_Price']].groupby('Perioden').mean()).reset_index()
+    fig = go.Figure()
+    fig.add_trace(go.Line(name='Average House Price Netherlands',
+        
+        x = average['Perioden'],
+        y = average['Average_Price']))
 
-    fig.update_layout(transition_duration=500)
+    fig.add_trace(go.Bar(name='House Price {}'.format(xaxis_column_name),x=df1[x],y=df1[y]))
+        # df1, x=x, y=y,barmode='group', hover_name=y)
+    
+    fig.update_layout(barmode='group', legend_title="Legend",title="House Prices Netherlands"
+    ,xaxis_title="Year",
+    yaxis_title="Price",)
 
     return fig, filtered_df.iloc[
         page_current*page_size:(page_current+ 1)*page_size
@@ -124,3 +148,34 @@ def update_figure(page_current,page_size,xaxis_column_name):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+
+
+
+
+# import plotly.graph_objects as go
+
+# def update_figure2(page_current,page_size,xaxis_column_name):
+#     # filtered_df = df[df[y] == selected_year]
+#     filtered_df=df
+#     filtered_df=filtered_df[filtered_df[id_filt]==xaxis_column_name]
+#     df1 = filtered_df.groupby(by=['RegioS', 'Perioden'])['Average_Price'].sum().reset_index()
+#     average=pd.DataFrame(df[['Perioden','Average_Price']].groupby('Perioden').mean()).reset_index()
+#     fig = go.Figure()
+#     fig.add_trace(go.Line(name='Average House Price Netherlands',
+        
+#         x = average['Perioden'],
+#         y = average['Average_Price']))
+
+#     fig.add_trace(go.Bar(name='House Price {}'.format(xaxis_column_name),x=df1[x],y=df1[y]))
+#         # df1, x=x, y=y,barmode='group', hover_name=y)
+    
+#     fig.update_layout(barmode='group')
+
+#     return fig, filtered_df.iloc[
+#         page_current*page_size:(page_current+ 1)*page_size
+#     ].to_dict('records')
+
+
+# fig,test=update_figure2(0,5,'Amsterdam')
+# plot(fig)
