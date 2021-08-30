@@ -2,14 +2,14 @@ import pandas as pd
 import requests
 import cbsodata 
 import numpy as np
-import matplotlib as mpl
+#import matplotlib as mpl
 import datetime
 
-import sqlite3
-import matplotlib.pyplot as plt
-import seaborn as sns
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+#import sqlite3
+#import matplotlib.pyplot as plt
+#import seaborn as sns
+#from pandas.plotting import register_matplotlib_converters
+#register_matplotlib_converters()
 
 #  verwerk dit in een functie
 # data_vacatures = pd.DataFrame(cbsodata.get_data('80474ned'))
