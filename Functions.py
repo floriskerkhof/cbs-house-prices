@@ -2,7 +2,6 @@ import pandas as pd
 import requests
 import cbsodata 
 import numpy as np
-#import matplotlib as mpl
 import datetime
 
 #import sqlite3
@@ -11,32 +10,57 @@ import datetime
 #from pandas.plotting import register_matplotlib_converters
 #register_matplotlib_converters()
 
-#  verwerk dit in een functie
-# data_vacatures = pd.DataFrame(cbsodata.get_data('80474ned'))
-# dict_kwartaal={' 1e kwartaal':'KW01',' 2e kwartaal':'KW02',' 3e kwartaal':'KW03'," 4e kwartaal":'KW04'}
-# # Zorg dat deze in andere functie opgeneomen wordt
 
-# for pat, repl in dict_kwartaal.items():
-#     data_vacatures['Perioden'] = data_vacatures['Perioden'].str.replace(pat, repl)
-# data_vacatures = cbs_add_date_column(data_vacatures)
 
 
 def loadin_cbsdata(apicode):
+    """
+    Function that loads in data from the cbs api.
+    
+
+    Parameters
+    ----------
+    apicode : string
+        API code for cbs data.
+
+    Returns
+    -------
+    Dataframe with cbs data.
+    
+    Comments
+    ---
+    Why is the perioden adjustment in here. test and comment, should this be part of the cbs_add_date_column function.
+
+    """
+    
     data = pd.DataFrame(cbsodata.get_data(apicode))
     dict_kwartaal={' 1e kwartaal':'KW01',' 2e kwartaal':'KW02',' 3e kwartaal':'KW03'," 4e kwartaal":'KW04'}
-    # Zorg dat deze in andere functie opgeneomen wordt
-#      potentieel nog een if of er kwartaal inzit
 
     for pat, repl in dict_kwartaal.items():
         data['Perioden'] = data['Perioden'].str.replace(pat, repl)
     if 4!= data['Perioden'].apply(len).mean():
         data = cbs_add_date_column(data)
     return data
-def setup_load_db(df,name):
+# def setup_load_db(df,name):
+#     """
+#     Function that saves a dataframe to a sqllite database
 
-    conn = sqlite3.connect('TestDB.db')
-    c = conn.cursor()
-    df.to_sql(name, conn, if_exists='append', index = False)
+#     Parameters
+#     ----------
+#     df : dataframe
+#         .
+#     name : string
+#         Name of the sqllite database.
+
+#     Returns
+#     -------
+#     None.
+
+#     """
+
+#     conn = sqlite3.connect('TestDB.db')
+#     c = conn.cursor()
+#     df.to_sql(name, conn, if_exists='append', index = False)
 
 def make_graph(df,x,d,v,name):
     """This function creates separate lines in a graph for every category
@@ -76,6 +100,26 @@ def make_graph(df,x,d,v,name):
     
     
 def cbs_add_date_column(data, period_name = "Perioden",col=0):
+    """
+    Need to properly review and comment
+
+    Parameters
+    ----------
+    data : TYPE
+        DESCRIPTION.
+    period_name : TYPE, optional
+        DESCRIPTION. The default is "Perioden".
+    col : TYPE, optional
+        DESCRIPTION. The default is 0.
+
+    Returns
+    -------
+    data : TYPE
+        DESCRIPTION.
+
+    """
+    
+    
     if not period_name in list(data):
         print("No time dimension found called " + period_name)
         return data
