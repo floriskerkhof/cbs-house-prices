@@ -1,8 +1,6 @@
 ## CBS House Prices
 
-You can use the [editor on GitHub](https://github.com/floriskerkhof/cbs-house-prices/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This app uses the dutch Centraal Bureau Statistiek (CBS) data on house prices to create a dashboard with a dropdown using Dash. Additionally this app can also be hosted on Heroku.
 
 ### Markdown
 
